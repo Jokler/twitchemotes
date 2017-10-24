@@ -1,0 +1,13 @@
+[package]
+name = "twitchemotes"
+version = "0.1.0"
+authors = ["Jokler <jokler.contact@gmail.com>"]
+
+[dependencies]
+serde = "1.0.15"
+serde_json = "1.0.4"
+serde_derive = "1.0.15"
+reqwest = "0.8.0"
+error-chain = "0.11.0"
+
+clippy = {version = "*", optional = true}

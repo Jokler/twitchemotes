@@ -64,6 +64,7 @@ pub mod global {
 /// Subscriber Emote API
 pub mod subscriber {
     use std::collections::HashMap;
+    use std::borrow::Cow;
 
     use serde_json;
     use serde::{Deserializer, Deserialize};
@@ -132,7 +133,7 @@ pub mod subscriber {
         /// The name of the channel
         pub channel_name: &'a str,
         /// The name that is displayed to users
-        pub display_name: &'a str,
+        pub display_name: Cow<'a, str>,
         /// The Channel ID
         pub channel_id: &'a str,
         /// The type of channel e.g. partner

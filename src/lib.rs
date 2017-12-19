@@ -28,3 +28,5 @@ pub mod error {
 
 /// Interface for the twitchemotes.com API
 pub mod ttv;
+/// Interface for the unofficial BTTV API
+pub mod bttv;

@@ -10,20 +10,6 @@
 //! Keep in mind that many emotes were made for the 1.0 size.
 //! [`Emote`]: global/struct.Emote.html
 
-use std::io::Read;
-use reqwest;
-
-use error::*;
-
-fn download(url: &str) -> Result<String> {
-    let mut resp = reqwest::get(url).map_err(Error::from)?;
-
-    let mut content = String::new();
-    resp.read_to_string(&mut content)
-        .map_err(Error::from)?;
-    Ok(content)
-}
-
 /// Contains all the data we have about an `Emote`
 #[derive(Deserialize, Clone, PartialEq, Debug)]
 pub struct Emote<'a> {
@@ -41,17 +27,17 @@ pub struct Emote<'a> {
 pub mod global {
     use std::collections::HashMap;
     use serde_json;
+    use reqwest;
 
     use error::*;
     use super::Emote;
-    use super::download;
 
     /// A `HashMap` which lets you access an `Emote` via its name
     pub type Emotes<'a> = HashMap<&'a str, Emote<'a>>;
 
     /// Downloads the API
-    pub fn download_json() -> Result<String> {
-        download("https://twitchemotes.com/api_cache/v3/global.json")
+    pub fn download_json() -> Result<reqwest::Response> {
+        reqwest::get("https://twitchemotes.com/api_cache/v3/global.json").map_err(Error::from)
     }
     /// Deserialize json into `Emotes`
     pub fn from_str(json: &str) -> Result<Emotes> {
@@ -68,10 +54,10 @@ pub mod subscriber {
 
     use serde_json;
     use serde::{Deserializer, Deserialize};
+    use reqwest;
 
     use error::*;
     use super::Emote;
-    use super::download;
 
     /// Information about either a subscriber or a bits badge
     #[derive(Deserialize, PartialEq, Clone, Debug)]
@@ -155,8 +141,8 @@ pub mod subscriber {
     pub type Channels<'a> = HashMap<&'a str, Channel<'a>>;
 
     /// Downloads the API
-    pub fn download_json() -> Result<String> {
-        download("https://twitchemotes.com/api_cache/v3/subscriber.json")
+    pub fn download_json() -> Result<reqwest::Response> {
+        reqwest::get("https://twitchemotes.com/api_cache/v3/subscriber.json").map_err(Error::from)
     }
     /// Deserialize json into `Channels`
     pub fn from_str(json: &str) -> Result<Channels> {
@@ -168,6 +154,7 @@ pub mod subscriber {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Read;
     use super::Emote;
     use super::global;
     use super::subscriber;
@@ -196,14 +183,16 @@ mod tests {
     #[test]
     #[ignore]
     fn deserialize_all_global_emotes() {
-        let res = global::download_json().unwrap();
+        let mut res = String::new();
+        global::download_json().unwrap().read_to_string(&mut res).unwrap();
         global::from_str(&res).unwrap();
     }
 
     #[test]
     #[ignore]
     fn deserialize_all_subscriber_emotes() {
-        let res = subscriber::download_json().unwrap();
+        let mut res = String::new();
+        subscriber::download_json().unwrap().read_to_string(&mut res).unwrap();
         subscriber::from_str(&res).unwrap();
     }
 }

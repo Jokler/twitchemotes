@@ -22,23 +22,23 @@ pub struct Emote<'a> {
     pub image_type: &'a str,
 }
 
+/// A `Vec` filled with the `Emote`s
+pub type Emotes<'a> = Vec<Emote<'a>>;
+
 /// Emotes which are available on every channel
 pub mod global {
     use serde_json;
     use reqwest;
 
     use error::*;
-    use super::Emote;
-
-    /// A `HashMap` which lets you access an `Emote` via its name
-    pub type Emotes<'a> = Vec<Emote<'a>>;
+    use super::Emotes;
 
     /// The API response including a url template and the emotes
     #[derive(Deserialize, PartialEq, Clone, Debug)]
     pub struct Global<'a> {
         /// The current status of the API
         pub status: i32,
-        /// Template for all `Emote`s - {{id}} is the size e.g. `3x`
+        /// Template for all `Emote`s - `{{id}}` is the size ranging from `1x` to `3x`
         #[serde(rename="urlTemplate")]
         pub url_template: String,
         /// A collection of all global emotes
@@ -61,12 +61,11 @@ pub mod global {
 
 /// Emotes which are enabled on a specific channel
 pub mod channels {
-    use super::Emote;
-    use error::*;
     use reqwest;
     use serde_json;
 
-    type Emotes<'a> = Vec<Emote<'a>>;
+    use error::*;
+    use super::Emotes;
 
     /// The API Response including a url template and the emotes
     #[derive(Deserialize, PartialEq, Clone, Debug)]
@@ -88,11 +87,10 @@ pub mod channels {
         reqwest::get(&format!("https://api.betterttv.net/2/channels/{}", name)).map_err(Error::from)
     }
 
-    /// Deserialize json into `Global`
-    pub fn from_str(json: &str) -> Result<Channel> {
-        let global = serde_json::from_str(json).map_err(Error::from)?;
-
-        Ok(global)
+    impl<'a> From<&'a str> for Channel<'a> {
+        fn from(json: &'a str) -> Self {
+            serde_json::from_str(json).unwrap()
+        }
     }
 }
 
@@ -149,7 +147,10 @@ mod tests {
     #[ignore]
     fn deserialize_all_global_emotes() {
         let mut res = String::new();
-        global::download_json().unwrap().read_to_string(&mut res).unwrap();
+        global::download_json()
+            .unwrap()
+            .read_to_string(&mut res)
+            .unwrap();
         global::from_str(&res).unwrap();
     }
 }

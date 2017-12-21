@@ -15,6 +15,13 @@ extern crate serde_json;
 
 extern crate reqwest;
 
+/// Interface for the twitchemotes.com API
+pub mod ttv;
+/// Interface for the unofficial BTTV API
+pub mod bttv;
+/// Used for the API responses
+pub use reqwest::Response;
+
 /// Errors for the twitchemotes crate using `error_chain`
 pub mod error {
     error_chain! {
@@ -25,8 +32,3 @@ pub mod error {
         }
     }
 }
-
-/// Interface for the twitchemotes.com API
-pub mod ttv;
-/// Interface for the unofficial BTTV API
-pub mod bttv;

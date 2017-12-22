@@ -7,7 +7,7 @@
 //! To use it replace {id} with the id of the [`Emote`]
 //! and {size} with 1.0, 2.0 or 3.0 for the respective resolution.
 //!
-//! Keep in mind that many emotes were made for the 1.0 size.
+//! Keep in mind that many emotes got scaled up for the 2.0 and 3.0 sizes.
 //! [`Emote`]: global/struct.Emote.html
 
 /// Contains all the data we have about an `Emote`
@@ -155,7 +155,6 @@ pub mod subscriber {
 #[cfg(test)]
 mod tests {
     use std::io::Read;
-    use super::Emote;
     use super::global;
     use super::subscriber;
 
@@ -169,15 +168,7 @@ mod tests {
 		            "description": null
 	          }
         }"#;
-        let emotes = global::from_str(json).unwrap();
-
-        assert_eq!(emotes.get("emote1").unwrap(),
-                   &Emote {
-                        id: 91735,
-                        code: "emote1",
-                        emoticon_set: 0,
-                        description: None,
-                    });
+        global::from_str(json).unwrap();
     }
 
     #[test]

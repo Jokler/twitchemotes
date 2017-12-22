@@ -92,6 +92,13 @@ pub mod channels {
             serde_json::from_str(json).unwrap()
         }
     }
+
+    impl<'a> Channel<'a> {
+        /// This will be replaced by the TryFrom trait in the future
+        pub fn try_from(json: &str) -> Result<Channel> {
+            serde_json::from_str(json).map_err(Error::from)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -140,7 +147,7 @@ mod tests {
             ]
         }"#;
 
-        channels::from_str(json).unwrap();
+        channels::Channel::from(json);
     }
 
     #[test]
